@@ -1,555 +1,419 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-<title>¿Quién Quiere Ser Millonario?</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
-  * {
-    box-sizing: border-box;
-  }
-  body {
-    margin: 0; padding: 0;
-    background: linear-gradient(135deg, #130f40, #30336b);
-    font-family: 'Poppins', sans-serif;
-    color: #f5f6fa;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 20px;
-  }
-  header {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 20px;
-    color: #70a1ff;
-    text-align: center;
-    letter-spacing: 2px;
-  }
-  #player-selection, #game-container, #final-message {
-    background: #2f3640;
-    border-radius: 12px;
-    max-width: 600px;
-    width: 100%;
-    padding: 20px 25px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-  }
-  #player-selection h2, #game-container h2 {
-    margin: 0 0 15px 0;
-    color: #f5f6fa;
-    font-weight: 600;
-    letter-spacing: 1.5px;
-  }
-  .player-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    justify-content: center;
-  }
-  .player-btn {
-    background: #57606f;
-    border: none;
-    border-radius: 8px;
-    color: white;
-    font-weight: 600;
-    font-size: 1.2rem;
-    padding: 15px 25px;
-    cursor: pointer;
-    transition: background 0.3s;
-    width: 80px;
-    text-align: center;
-  }
-  .player-btn:hover, .player-btn:focus {
-    background: #70a1ff;
-    outline: none;
-    color: #130f40;
-  }
-  #question-number {
-    font-size: 1rem;
-    margin-bottom: 10px;
-    color: #a4b0be;
-  }
-  #question-text {
-    font-size: 1.4rem;
-    margin-bottom: 20px;
-    min-height: 70px;
-    letter-spacing: 0.5px;
-  }
-  .answers {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-  }
-  .answer-btn {
-    background: #57606f;
-    border: none;
-    border-radius: 10px;
-    padding: 15px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: white;
-    cursor: pointer;
-    transition: background 0.3s;
-    text-align: left;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .answer-btn span.option-letter {
-    font-weight: 700;
-    background: #130f40;
-    padding: 8px 14px;
-    border-radius: 50%;
-    min-width: 38px;
-    text-align: center;
-    color: #70a1ff;
-  }
-  .answer-btn:hover:not(.disabled), .answer-btn:focus:not(.disabled) {
-    background: #70a1ff;
-    color: #130f40;
-    outline: none;
-  }
-  .answer-btn.correct {
-    background: #2ed573;
-    color: #130f40;
-    font-weight: 700;
-    cursor: default;
-  }
-  .answer-btn.incorrect {
-    background: #ff4757;
-    color: #130f40;
-    cursor: default;
-  }
-  .disabled {
-    pointer-events: none;
-  }
-  #feedback {
-    margin-top: 15px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    min-height: 30px;
-  }
-  #next-btn {
-    margin-top: 25px;
-    padding: 12px 22px;
-    font-weight: 700;
-    font-size: 1.2rem;
-    background: #70a1ff;
-    border: none;
-    border-radius: 10px;
-    color: #130f40;
-    cursor: pointer;
-    display: none;
-    transition: background 0.3s;
-  }
-  #next-btn:hover, #next-btn:focus {
-    background: #4752c4;
-    outline: none;
-  }
-  #final-message {
-    display: none;
-    text-align: center;
-    color: #70a1ff;
-  }
-  #final-message h2 {
-    font-size: 2rem;
-    margin-bottom: 20px;
-  }
-  #final-message button {
-    margin-top: 20px;
-    padding: 12px 22px;
-    font-weight: 700;
-    font-size: 1.2rem;
-    background: #70a1ff;
-    border: none;
-    border-radius: 10px;
-    color: #130f40;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-  #final-message button:hover, #final-message button:focus {
-    background: #4752c4;
-    outline: none;
-  }
-  #lifeline-container {
-    margin-top: 15px;
-    text-align: center;
-  }
-  #lifeline-btn {
-    background: #ffa502;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 12px;
-    font-weight: 700;
-    cursor: pointer;
-    font-size: 1.1rem;
-    color: #130f40;
-    user-select: none;
-    transition: background 0.3s;
-  }
-  #lifeline-btn:disabled {
-    background: #555;
-    cursor: not-allowed;
-    color: #ccc;
-  }
-  #lifeline-btn:hover:not(:disabled),
-  #lifeline-btn:focus:not(:disabled) {
-    background: #ffb84d;
-    outline: none;
-  }
-  #back-to-selection-btn {
-    margin-top: 15px;
-    background: #ff6b81;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 10px;
-    color: #130f40;
-    font-weight: 700;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-  #back-to-selection-btn:hover, #back-to-selection-btn:focus {
-    background: #ff4757;
-    outline: none;
-  }
-  @media (max-width: 600px) {
-    .answers {
-      grid-template-columns: 1fr;
-    }
-    .player-btn {
-      width: 100%;
-    }
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitud de Justificación de Ausencia (Parlamento Juvenil)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Incluir Lucide Icons para un diseño más moderno y lúdico -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e3f2fd; /* Fondo Azul Claro, sugiere tranquilidad */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 2.5rem 1rem;
+        }
+        .card {
+            max-width: 900px;
+            width: 100%;
+            background-color: white;
+            border-radius: 2rem;
+            box-shadow: 0 15px 35px -10px rgba(30, 136, 229, 0.4), 0 5px 15px -5px rgba(0, 0, 0, 0.08);
+            padding: 3rem;
+            border-top: 10px solid #1E88E5; /* Azul Fuerte: Confianza y Seriedad */
+        }
+        .section-title {
+            color: #1E88E5; 
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            font-size: 1.75rem;
+        }
+        .toggle-btn {
+            background-color: #00b894; /* Color de crecimiento/éxito para el botón */
+            transition: all 0.3s ease;
+            box-shadow: 0 4px #00967d;
+            transform: translateY(-2px);
+        }
+        .toggle-btn:hover {
+            background-color: #00d6ae;
+            box-shadow: 0 2px #00967d;
+            transform: translateY(0);
+        }
+        .proposal-card {
+            transition: all 0.5s ease-in-out;
+            border-left: 5px solid #1E88E5; /* Azul: Seriedad */
+        }
+        .anexo-btn {
+            background-color: #FF9800;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px #E68900;
+            transform: translateY(-2px);
+        }
+        .anexo-btn:hover {
+            background-color: #ffa726;
+            box-shadow: 0 2px #E68900;
+            transform: translateY(0);
+        }
+        /* Estilo para el botón PDF */
+        .pdf-btn {
+            background-color: #D32F2F; /* Rojo Oscuro, color de PDF */
+            transition: all 0.3s ease;
+            box-shadow: 0 4px #B71C1C;
+            transform: translateY(-2px);
+        }
+        .pdf-btn:hover {
+            background-color: #E53935;
+            box-shadow: 0 2px #B71C1C;
+            transform: translateY(0);
+        }
+    </style>
 </head>
 <body>
-<header>¿Quién Quiere Ser Millonario?</header>
+    <div class="card">
+        <!-- Encabezado y Contexto (Humanizado) -->
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-1">Solicitud de Justificación y Propuesta de Compensación</h1>
+            <p class="text-xl text-gray-500">
+                Carl Rogers: La Prepa donde puedo ser yo mismo | Un paso gigante hacia mi <strong class="text-gray-900 font-extrabold">Autorrealización</strong>
+            </p>
+            <div class="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-200">
+                <p class="text-lg font-bold text-blue-700 flex justify-center items-center gap-2">
+                    <i data-lucide="calendar-check" class="w-6 h-6"></i>
+                    Conflicto de Fechas: Parlamento Juvenil Centro Norte (PJI)
+                </p>
+                <p class="text-sm text-blue-600 mt-1">
+                    <strong class="font-bold text-gray-800">Fecha del Conflicto:</strong> 5 de diciembre (Coincide con la Feria de Humanidades)
+                </p>
+            </div>
+        </header>
 
-<section id="player-selection">
-  <h2>Seleccione su número de jugador</h2>
-  <div class="player-list">
-    <button class="player-btn" data-player="1">Jugador 1</button>
-    <button class="player-btn" data-player="2">Jugador 2</button>
-    <button class="player-btn" data-player="3">Jugador 3</button>
-    <button class="player-btn" data-player="4">Jugador 4</button>
-    <button class="player-btn" data-player="5">Jugador 5</button>
-    <button class="player-btn" data-player="6">Jugador 6</button>
-    <button class="player-btn" data-player="7">Jugador 7</button>
-    <button class="player-btn" data-player="8">Jugador 8</button>
-  </div>
-</section>
+        <!-- Solicitud y Exposición del Contexto (Impersonal) -->
+        <section class="mb-10">
+            <h2 class="section-title">
+                <i data-lucide="graduation-cap" class="w-7 h-7"></i>
+                1. Objeto y Contexto de la Solicitud
+            </h2>
+            
+            <p class="text-gray-700 mb-4 font-extrabold text-lg p-2 rounded-lg bg-yellow-50 border-l-4 border-yellow-400">
+                Solicitante: <span class="text-blue-700">Genaro Zavala</span>.
+            </p>
 
-<section id="game-container" style="display:none;">
-  <div id="question-number"></div>
-  <div id="question-text"></div>
-  <div class="answers">
-    <button class="answer-btn" data-option="A"><span class="option-letter">A</span> <span class="answer-text"></span></button>
-    <button class="answer-btn" data-option="B"><span class="option-letter">B</span> <span class="answer-text"></span></button>
-    <button class="answer-btn" data-option="C"><span class="option-letter">C</span> <span class="answer-text"></span></button>
-    <button class="answer-btn" data-option="D"><span class="option-letter">D</span> <span class="answer-text"></span></button>
-  </div>
-  <div id="lifeline-container">
-    <button id="lifeline-btn" title="Activar comodín 50/50 para eliminar dos respuestas incorrectas">Comodín 50/50</button>
-  </div>
-  <button id="back-to-selection-btn" title="Volver a la selección de jugadores">Volver a selección</button>
-  <div id="feedback"></div>
-  <button id="next-btn">Siguiente pregunta</button>
-</section>
+            <!-- Declaración de Propósito Impersonal -->
+            <p class="text-gray-700 mb-4 p-3 bg-gray-100 rounded-lg border-l-4 border-gray-400">
+                Mi objetivo al presentar el presente recurso es solicitar justificación de la ausencia para el día <strong class="font-bold">5 de diciembre</strong>, fecha que coincide con la Feria de Humanidades. La solicitud se fundamenta en mi fundamental participación como <strong class="font-bold text-gray-900">Director de Enlace Universitario de Política Juvenil Internacional (PJI) y Senador Juvenil en el parlamento Juvenil Region Centro-Norte</strong>.
+            </p>
 
-<section id="final-message" style="display:none;">
-  <h2>¡Felicidades! Has completado tus preguntas.</h2>
-  <button id="restart-btn">Jugar de nuevo</button>
-</section>
+            <!-- Oportunidad Única (Naranja/Dorado: Valor) - Reforzado -->
+            <p class="text-gray-700 mb-6 p-4 bg-orange-50 rounded-xl border-l-4 border-[#FF9800] font-semibold">
+                Para mi, la participación como <span class="font-bold">Director de Enlace Universitario de PJI y Senador Juvenil</span> en el Parlamento Centro Norte significa mucho y representa años de esfuerzo y preparación para convertirme en una de las personas con el honor de participar en este tipo de actividades. Esta actividad es una <strong class="font-extrabold text-gray-900">Experiencia de Vida</strong> que permite aplicar los valores de <strong class="font-extrabold text-gray-900">liderazgo, ética y autorrealización</strong> promovidos en esta institución.
+            </p>
+            <p class="text-gray-700">
+                Esta experiencia es necesaria para validar conocimientos en un escenario real y formal.
+            </p>
+        </section>
 
-<script>
-(() => {
-  "use strict";
+        <!-- NUEVA SECCIÓN: Misión, Visión y Funciones Detalladas -->
+        <section class="mb-10">
+            <h2 class="section-title">
+                <i data-lucide="gavel" class="w-7 h-7"></i>
+                2. Política Juvenil Internacional (PJI)
+            </h2>
 
-  const questions = {
-    1: [
-      {q: "¿Cuál es el color del cielo en un día despejado?", opts: {A:"Rojo", B:"Azul", C:"Verde", D:"Amarillo"}, correct: "B"},
-      {q: "¿Cuántos días tiene una semana?", opts: {A:"5", B:"6", C:"7", D:"8"}, correct: "C"},
-      {q: "¿Qué instrumento tiene teclas blancas y negras?", opts: {A:"Guitarra", B:"Violín", C:"Piano", D:"Trompeta"}, correct: "C"},
-      {q: "¿Cuál es la capital de Argentina?", opts: {A:"Lima", B:"Buenos Aires", C:"Santiago", D:"Montevideo"}, correct: "B"},
-      {q: "¿Cuál es la fórmula química del agua?", opts: {A:"CO2", B:"H2O", C:"O2", D:"NaCl"}, correct: "B"},
-      {q: "¿Qué planeta es conocido como el Planeta Rojo?", opts: {A:"Marte", B:"Venus", C:"Júpiter", D:"Saturno"}, correct: "A"},
-      {q: "¿Quién pintó la Mona Lisa?", opts: {A:"Van Gogh", B:"Picasso", C:"Leonardo da Vinci", D:"Michelangelo"}, correct: "C"},
-      {q: "¿Cuál es el símbolo químico del oro?", opts: {A:"Au", B:"Ag", C:"Fe", D:"Hg"}, correct: "A"},
-      {q: "¿Quién fue el primer hombre en la Luna?", opts: {A:"Yuri Gagarin", B:"Neil Armstrong", C:"Buzz Aldrin", D:"Alan Shepard"}, correct: "B"},
-      {q: "¿Cuál es la capital de Canadá?", opts: {A:"Toronto", B:"Ottawa", C:"Montreal", D:"Vancouver"}, correct: "B"},
-      {q: "¿Cuál es la teoría que explica la evolución de las especies?", opts: {A:"Teoría heliocéntrica", B:"Teoría de la relatividad", C:"Teoría de la evolución por selección natural", D:"Teoría del Big Bang"}, correct: "C"},
-      {q: "¿Quién escribió 'Don Quijote de la Mancha'?", opts: {A:"Federico García Lorca", B:"Miguel de Cervantes", C:"Jorge Luis Borges", D:"Gabriel García Márquez"}, correct: "B"},
-      {q: "¿Cuál es el significado del término 'paradigma' en ciencias?", opts: {A:"Modelo o patrón ejemplar", B:"Teoría falsa", C:"Hipótesis sin pruebas", D:"Error experimental"}, correct: "A"},
-      {q: "En física cuántica, ¿qué representa el principio de incertidumbre de Heisenberg?", opts: {A:"Imposibilidad de conocer simultáneamente posición y momento exactos", B:"Conservación de la energía", C:"Relatividad del tiempo", D:"Dualidad onda-partícula"}, correct: "A"}
-    ],
-    2: [
-      {q: "¿Cuál es el continente más grande del mundo?", opts: {A:"África", B:"Asia", C:"América", D:"Europa"}, correct: "B"},
-      {q: "¿Cuál es la moneda oficial de Japón?", opts: {A:"Yen", B:"Dólar", C:"Euro", D:"Peso"}, correct: "A"},
-      {q: "¿Cuál es el símbolo químico del hierro?", opts: {A:"Ir", B:"Fe", C:"In", D:"I"}, correct: "B"},
-      {q: "¿Quién escribió 'La Odisea'?", opts: {A:"Homero", B:"Sócrates", C:"Platón", D:"Virgilio"}, correct: "A"},
-      {q: "¿Qué instrumento mide la presión atmosférica?", opts: {A:"Barómetro", B:"Termómetro", C:"Anemómetro", D:"Higrómetro"}, correct: "A"},
-      {q: "¿En qué año comenzó la Revolución Francesa?", opts: {A:"1789", B:"1776", C:"1804", D:"1799"}, correct: "A"},
-      {q: "¿Quién es el padre de la teoría de la relatividad?", opts: {A:"Isaac Newton", B:"Albert Einstein", C:"Nikola Tesla", D:"Galileo Galilei"}, correct: "B"},
-      {q: "¿Qué órgano produce la insulina?", opts: {A:"Páncreas", B:"Hígado", C:"Riñón", D:"Bazo"}, correct: "A"},
-      {q: "¿Cómo se llama la capa más externa de la Tierra?", opts: {A:"Manto", B:"Núcleo", C:"Corteza", D:"Atmósfera"}, correct: "C"},
-      {q: "¿Quién pintó 'La noche estrellada'?", opts: {A:"Van Gogh", B:"Picasso", C:"Dalí", D:"Monet"}, correct: "A"},
-      {q: "En matemáticas, ¿qué es un número primo?", opts: {A:"Divisible sólo por sí mismo y 1", B:"Número negativo", C:"Número decimal", D:"Número par"}, correct: "A"},
-      {q: "¿Cuál es la capital de Australia?", opts: {A:"Sídney", B:"Canberra", C:"Melbourne", D:"Perth"}, correct: "B"},
-      {q: "¿Qué significa la expresión 'E=mc²' en física?", opts: {A:"Fuerza igual a masa por aceleración al cuadrado", B:"Energía igual a masa por velocidad de la luz al cuadrado", C:"Energía cinética es masa por velocidad al cuadrado", D:"Ninguna es correcta"}, correct: "B"},
-      {q: "¿Cuál es la función principal de los ribosomas en las células?", opts: {A:"Producir energía", B:"Sintetizar proteínas", C:"Almacenar información genética", D:"Controlar el agua celular"}, correct: "B"}
-    ],
-    3: [
-      {q: "¿En qué año llegó Cristóbal Colón a América?", opts: {A:"1492", B:"1500", C:"1400", D:"1600"}, correct: "A"},
-      {q: "¿Cuál es el órgano responsable del equilibrio en el cuerpo humano?", opts: {A:"Cerebelo", B:"Corazón", C:"Pulmones", D:"Hígado"}, correct: "A"},
-      {q: "En química, ¿qué es un isótopo?", opts: {A:"Elementos con diferente número de protones", B:"Átomos con diferente número de neutrones", C:"Átomos con diferente número de electrones", D:"Moléculas con distinta estructura"}, correct: "B"},
-      {q: "¿Cuál es el máximo común divisor (MCD) de 24 y 36?", opts: {A:"6", B:"12", C:"18", D:"24"}, correct: "B"},
-      {q: "¿Quién fue el autor de 'Fausto'?", opts: {A:"Johann Wolfgang von Goethe", B:"Friedrich Schiller", C:"William Shakespeare", D:"Victor Hugo"}, correct: "A"},
-      {q: "¿Qué fenómeno físico explica la dispersión de la luz en un prisma?", opts: {A:"Reflexión", B:"Refracción", C:"Difracción", D:"Interferencia"}, correct: "B"},
-      {q: "¿Cuál es el valor de la constante gravitacional universal (G) aproximadamente?", opts: {A:"6.67 x 10⁻¹¹ N·m²/kg²", B:"9.8 m/s²", C:"3 x 10⁸ m/s", D:"1.6 x 10⁻¹⁹ C"}, correct: "A"},
-      {q: "¿Quién compuso la Novena Sinfonía? ", opts: {A:"Mozart", B:"Beethoven", C:"Bach", D:"Chopin"}, correct: "B"},
-      {q: "En biología, ¿qué es la mitosis?", opts: {A:"Proceso de división celular para reproducirse", B:"Mutación genética", C:"Transformación de energía", D:"Reacción química"}, correct: "A"},
-      {q: "¿Cuál es el elemento químico con número atómico 79?", opts: {A:"Plata", B:"Oro", C:"Mercurio", D:"Plomo"}, correct: "B"},
-      {q: "¿Qué autor escribió 'En busca del tiempo perdido'?", opts: {A:"Marcel Proust", B:"James Joyce", C:"Virginia Woolf", D:"Franz Kafka"}, correct: "A"},
-      {q: "¿Qué importante descubrimiento hizo Marie Curie?", opts: {A:"Penicilina", B:"Radioactividad", C:"Antibióticos", D:"Ley de la gravedad"}, correct: "B"},
-      {q: "¿Cuál es la diferencia principal entre un asteroide y un cometa?", opts: {A:"Cometas tienen hielo y polvo, asteroides son rocosos", B:"Asteroides tienen atmósfera", C:"Cometas son más pequeños", D:"Asteroides orbitan fuera del sistema solar"}, correct: "A"},
-      {q: "¿Qué representa la 'constante de Planck' en física?", opts: {A:"La mínima energía de un fotón", B:"Velocidad de la luz", C:"Masa de un electrón", D:"Gravedad en la tierra"}, correct: "A"}
-    ],
-    4: [
-      {q: "¿Qué filósofo griego es conocido por su método dialéctico?", opts: {A:"Sócrates", B:"Platón", C:"Aristóteles", D:"Epicuro"}, correct: "A"},
-      {q: "¿Cuál es la capital de Mongolia?", opts: {A:"Ulan Bator", B:"Astana", C:"Tiflis", D:"Katmandú"}, correct: "A"},
-      {q: "¿Qué descubrió Isaac Newton gracias a una manzana?", opts: {A:"Ley de la gravedad", B:"Teoría heliocéntrica", C:"Ley de la electricidad", D:"La relatividad"}, correct: "A"},
-      {q: "¿Cuál es la fórmula del cloruro de sodio?", opts: {A:"NaCl", B:"KCl", C:"MgCl2", D:"Na2SO4"}, correct: "A"},
-      {q: "¿Quién fue el primer emperador romano?", opts: {A:"Julio César", B:"Augusto", C:"Nerón", D:"Trajano"}, correct: "B"},
-      {q: "¿Qué es el 'Big Bang'?", opts: {A:"Teoría del origen del universo", B:"Fenómeno meteorológico", C:"Un agujero negro", D:"Una estrella supernova"}, correct: "A"},
-      {q: "¿En qué año se aprobó la Declaración Universal de Derechos Humanos?", opts: {A:"1948", B:"1918", C:"1939", D:"1960"}, correct: "A"},
-      {q: "¿Qué es la paradoja de Schrödinger?", opts: {A:"Un gato vivo y muerto simultáneamente", B:"Una bola negra en oscuros", C:"Una estrella colapsada", D:"Un fenómeno eléctrico"}, correct: "A"},
-      {q: "¿Qué es la entropía en termodinámica?", opts: {A:"Medida de desorden en un sistema", B:"Cantidad de energía", C:"Velocidad molecular", D:"Temperatura absoluta"}, correct: "A"},
-      {q: "¿Quién pintó el fresco 'La escuela de Atenas'?", opts: {A:"Miguel Ángel", B:"Rafael", C:"Leonardo da Vinci", D:"Donatello"}, correct: "B"},
-      {q: "¿Qué es un 'quark' en física?", opts: {A:"Partícula elemental constituyente de protones y neutrones", B:"Una estrella pequeña", C:"Un tipo de energía", D:"Una unidad de medida"}, correct: "A"},
-      {q: "¿Qué significa la Teoría de la Relatividad General?", opts: {A:"La gravedad es curvatura del espacio-tiempo", B:"La luz viaja constante", C:"La materia no puede destruirse", D:"El tiempo es absoluto"}, correct: "A"},
-      {q: "¿Qué libro inicia con la frase 'En un lugar de La Mancha...'?", opts: {A:"El Quijote", B:"La Eneida", C:"Don Juan Tenorio", D:"La Odisea"}, correct: "A"},
-      {q: "¿Cuál es la importancia del número áureo (φ) en la naturaleza?", opts: {A:"Relación de proporciones armónicas y estéticas", B:"Constante de temperatura", C:"Valor de aceleración", D:"Coeficiente eléctrico"}, correct: "A"}
-    ],
-    5: [
-      {q: "¿Cuál es el nombre completo de la partícula llamada 'bosón de Higgs'?", opts: {A:"Bosón escalar de Brout-Englert-Higgs", B:"Bosón de Fermi", C:"Bosón de fotones", D:"Bosón neutrino"}, correct: "A"},
-      {q: "¿Quién propuso el modelo atómico con órbitas circulares para electrones?", opts: {A:"Bohr", B:"Rutherford", C:"Thomson", D:"Schrödinger"}, correct: "A"},
-      {q: "¿Cuál es la función principal del ARN?", opts: {A:"Codificar proteínas a partir del ADN", B:"Almacenar energía", C:"Proveer estructura celular", D:"Transmitir energía nerviosa"}, correct: "A"},
-      {q: "¿Qué es la paradoja de los gemelos en relatividad?", opts: {A:"Un gemelo envejece menos debido a la relatividad al viajar", B:"Gemelos con distinta herencia genética", C:"Gemelos telepáticos", D:"Gemelos con distinto ADN"}, correct: "A"},
-      {q: "¿Quién escribió 'Crítica de la razón pura'?", opts: {A:"Kant", B:"Hegel", C:"Nietzsche", D:"Descartes"}, correct: "A"},
-      {q: "¿Qué representa la función de onda en mecánica cuántica?", opts: {A:"Probabilidad de encontrar una partícula", B:"Trayectoria exacta", C:"Velocidad de partícula", D:"Fuerza aplicada"}, correct: "A"},
-      {q: "¿Qué es la dualidad onda-partícula?", opts: {A:"Partículas presentan propiedades de ondas y partículas", B:"Ondas y partículas son lo mismo", C:"Ondas viajan y partículas no", D:"Partículas viajan y ondas no"}, correct: "A"},
-      {q: "¿Qué científico descubrió la radiactividad natural?", opts: {A:"Marie Curie", B:"Henri Becquerel", C:"Pierre Curie", D:"Rutherford"}, correct: "B"},
-      {q: "¿Cuáles son los componentes principales de un ecosistema?", opts: {A:"Productores, consumidores y descomponedores", B:"Sólo plantas y animales", C:"Aire y agua", D:"Rocas y minerales"}, correct: "A"},
-      {q: "¿Cuál es el principio de incertidumbre de Heisenberg?", opts: {A:"No se pueden conocer simultáneamente posición y momento exactos de una partícula", B:"La energía se conserva", C:"La velocidad es constante", D:"El tiempo es absoluto"}, correct: "A"},
-      {q: "¿Qué filósofo es considerado padre del existencialismo?", opts: {A:"Jean-Paul Sartre", B:"Friedrich Nietzsche", C:"Immanuel Kant", D:"René Descartes"}, correct: "A"},
-      {q: "¿Qué país fue la cuna de la civilización sumeria?", opts: {A:"Egipto", B:"Mesopotamia", C:"India", D:"China"}, correct: "B"},
-      {q: "¿Qué significa 'razón' en el contexto filosófico de Descartes?", opts: {A:"Capacidad para distinguir verdad y falsedad", B:"Sentimiento instintivo", C:"Creencia popular", D:"Opinión común"}, correct: "A"},
-      {q: "¿Cuál es el enunciado correcto del Teorema de Pitágoras?", opts: {A:"En un triángulo rectángulo, el cuadrado de la hipotenusa es igual a la suma de los cuadrados de los catetos", B:"La suma de los ángulos es 360°", C:"Los lados opuestos son iguales", D:"La hipotenusa es menor que los catetos"}, correct: "A"}
-    ],
-    6: [
-      {q: "En matemáticas, ¿qué es un número irracional?", opts: {A:"Número que no puede escribirse como fracción exacta", B:"Número entero positivo", C:"Número negativo", D:"Número exacto"}, correct: "A"},
-      {q: "¿Qué es la antimateria?", opts: {A:"Materia compuesta por antipartículas con carga opuesta", B:"Materia invisible", C:"Materia oscura", D:"Materia ligera"}, correct: "A"},
-      {q: "¿Cuál es la teoría que estudia la estructura del universo a gran escala?", opts: {A:"Cosmología", B:"Geología", C:"Meteorología", D:"Astrología"}, correct: "A"},
-      {q: "¿Qué representa el número de Euler (e) en matemáticas?", opts: {A:"Base de los logaritmos naturales", B:"Constante gravitacional", C:"Velocidad de la luz", D:"Número primo"}, correct: "A"},
-      {q: "¿En qué consiste el principio antrópico?", opts: {A:"La observación del universo debe ser compatible con la existencia de observadores", B:"El universo se está expandiendo", C:"La materia oscura controla la gravedad", D:"La energía se conserva"}, correct: "A"},
-      {q: "¿Qué es un agujero negro?", opts: {A:"Región de espacio con gravedad tan intensa que nada escapa", B:"Una estrella común", C:"Un planeta muy denso", D:"Una galaxia pequeña"}, correct: "A"},
-      {q: "¿Quién fue Ludwig Wittgenstein?", opts: {A:"Filósofo del lenguaje y la lógica del siglo XX", B:"Matemático del Renacimiento", C:"Astrónomo griego", D:"Científico del siglo XVIII"}, correct: "A"},
-      {q: "¿Qué es un fractal?", opts: {A:"Figura geométrica con auto-similitud a diferentes escalas", B:"Sólido regular", C:"Variable física", D:"Tipo de átomo"}, correct: "A"},
-      {q: "¿Cuál es la base del sistema numérico binario?", opts: {A:"Dos", B:"Diez", C:"Ocho", D:"Veinte"}, correct: "A"},
-      {q: "¿Qué problema resolvió Alan Turing con su máquina?", opts: {A:"Conceptualizar computación y algoritmos", B:"Ley de la gravedad", C:"Estructura molecular", D:"Relatividad"}, correct: "A"},
-      {q: "¿Qué es el teorema de Gödel sobre la incompletitud?", opts: {A:"En sistemas formales no se pueden demostrar todas las verdades", B:"Todo número es primo", C:"El universo es infinito", D:"El tiempo es lineal"}, correct: "A"},
-      {q: "¿Qué expresa la hipótesis de Riemann?", opts: {A:"Ubicación de los ceros de la función zeta", B:"Ley de Newton", C:"Estructura del átomo", D:"Velocidad de la luz"}, correct: "A"},
-      {q: "¿Qué es la paradoja de Banach-Tarski?", opts: {A:"Un objeto puede dividirse y recomponerse en dos iguales al original", B:"Un agujero negro puede destruir materia", C:"La luz puede viajar más rápido que el sonido", D:"El tiempo es relativo"}, correct: "A"},
-      {q: "¿Cuál es la implicación filosófica del experimento mental del cerebro en una cubeta?", opts: {A:"Cuestiona la realidad percibida y el conocimiento", B:"Demuestra la validez del empirismo", C:"Confirma la teoría de la evolución", D:"Explica el origen del universo"}, correct: "A"},
-    ],
-    7: [
-      {q: "¿Cuál es el elemento más abundante en la corteza terrestre?", opts: {A:"Oxígeno", B:"Hierro", C:"Silicio", D:"Aluminio"}, correct: "A"},
-      {q: "¿Qué obra literaria comienza con 'Call me Ishmael.'?", opts: {A:"Moby Dick", B:"El Gran Gatsby", C:"1984", D:"Don Quijote"}, correct: "A"},
-      {q: "¿Cuál es la hipótesis de Sapir-Whorf sobre el lenguaje?", opts: {A:"El lenguaje influye en la percepción de la realidad", B:"El lenguaje es universal", C:"El lenguaje no afecta el pensamiento", D:"El lenguaje es sólo comunicación"}, correct: "A"},
-      {q: "¿Qué es el entrelazamiento cuántico?", opts: {A:"Fenómeno donde partícualas mantienen conexión instantánea a distancia", B:"Separación de partículas", C:"Colapso de la función de onda", D:"Emisión de fotones"}, correct: "A"},
-      {q: "¿Quién formuló la Ley de Hubble que explica la expansión del universo?", opts: {A:"Edwin Hubble", B:"Galileo Galilei", C:"Isaac Newton", D:"Albert Einstein"}, correct: "A"},
-      {q: "¿Qué es el Principio de Exclusión de Pauli?", opts: {A:"Dos fermiones no pueden tener el mismo estado cuántico", B:"Energía y masa son equivalentes", C:"La posición y velocidad se conocen simultáneamente", D:"La luz se propaga en línea recta"}, correct: "A"},
-      {q: "¿Cuál es el idioma más hablado en número de hablantes nativos?", opts: {A:"Inglés", B:"Mandarín", C:"Español", D:"Hindi"}, correct: "B"},
-      {q: "¿Qué define la entropía en un sistema termodinámico?", opts: {A:"La cantidad de desorden o azar", B:"La energía total", C:"La temperatura", D:"La presión"}, correct: "A"},
-      {q: "¿Qué es la 'hipótesis de Riemann' y por qué es importante?", opts: {A:"Un enigma matemático sobre la distribución de números primos", B:"Una teoría física sobre energía oscura", C:"Una hipótesis biológica", D:"Un principio filosófico"}, correct: "A"},
-      {q: "¿Qué filósofo alemán es autor de 'Así habló Zaratustra'?", opts: {A:"Friedrich Nietzsche", B:"Immanuel Kant", C:"Arthur Schopenhauer", D:"Georg Hegel"}, correct: "A"},
-      {q: "¿Qué es el efecto Doppler en física?", opts: {A:"Cambio de frecuencia por movimiento relativo entre fuente y observador", B:"Cambio de intensidad de luz", C:"Magnitud eléctrica", D:"Reacción química"}, correct: "A"},
-      {q: "¿Qué representa la paradoja de Russell en matemáticas?", opts: {A:"Problema de conjuntos que no pueden contenerse a sí mismos", B:"Ilusión óptica", C:"Número infinito", D:"Variable estadística"}, correct: "A"},
-      {q: "¿Quién fue Alan Turing y cuál fue su contribución fundamental?", opts: {A:"Pionero de la computación y criptografía durante la Segunda Guerra Mundial", B:"Físico cuántico", C:"Astrónomo", D:"Filósofo"}, correct: "A"},
-      {q: "¿Qué es el Principio de Correspondencia en física?", opts: {A:"Las nuevas teorías deben coincidir con las viejas en sus límites", B:"Los electrones giran más rápido", C:"La masa aumenta con la velocidad", D:"Nada puede viajar más rápido que la luz"}, correct: "A"},
-    ],
-    8: [
-      {q: "¿Qué define el valor de la constante de Planck?", opts: {A:"Cuantización de la energía", B:"Velocidad de la luz", C:"Masa del electrón", D:"Carga eléctrica"}, correct: "A"},
-      {q: "¿Qué es la teoría M en física teórica?", opts: {A:"Unificación de teorías de supercuerdas en once dimensiones", B:"Teoría de la relatividad general", C:"Modelado de materia oscura", D:"Teoría clásica de Newton"}, correct: "A"},
-      {q: "¿Cuál es el enunciado del teorema de Noether?", opts: {A:"Cada simetría continua implica una ley de conservación", B:"La energía se conserva en sistemas cerrados", C:"El tiempo es relativo", D:"La masa puede convertirse en energía"}, correct: "A"},
-      {q: "¿Qué describe la ecuación de Schrödinger?", opts: {A:"Evolución temporal de la función de onda cuántica", B:"Movimiento planetario", C:"Relatividad especial", D:"Flujo de energía"}, correct: "A"},
-      {q: "¿Quién fue Ludwig Wittgenstein y qué aportó a la filosofía?", opts: {A:"Filósofo del lenguaje y lógica analítica", B:"Matemático alemán", C:"Psicólogo", D:"Físico"}, correct: "A"},
-      {q: "¿Qué representa el entrelazamiento cuántico en computación?", opts: {A:"Estado correlacionado para procesamiento de información cuántica", B:"Separar partículas en el espacio", C:"Colapso de función de onda", D:"Medida clásica"}, correct: "A"},
-      {q: "¿En qué consiste la paradoja de Schrödinger?", opts: {A:"Un gato que está simultáneamente vivo y muerto hasta ser observado", B:"La luz dual", C:"La incertidumbre cuántica", D:"La teoría de cuerdas"}, correct: "A"},
-      {q: "¿Qué proponen las teorías de multiverso?", opts: {A:"Existencia de múltiples universos simultáneamente", B:"Universo único e infinito", C:"Universo con límites", D:"Universo estático"}, correct: "A"},
-      {q: "¿Qué filósofo es conocido por la frase 'Pienso, luego existo'?", opts: {A:"René Descartes", B:"Immanuel Kant", C:"David Hume", D:"Søren Kierkegaard"}, correct: "A"},
-      {q: "¿Qué significa la hipótesis del cerebro en una cubeta?", opts: {A:"Plantea que nuestra realidad podría ser una simulación", B:"Fenómeno biológico", C:"Un experimento médico", D:"Un concepto físico"}, correct: "A"},
-      {q: "¿Qué es el número de Mandelbrot?", opts: {A:"Conjunto fractal famoso en matemáticas complejas", B:"Constante física", C:"Número primo", D:"Número áureo"}, correct: "A"},
-      {q: "¿Qué significa el teorema de Bell en mecánica cuántica?", opts: {A:"Implica la no localidad y ruptura de realismo local", B:"Explica la gravedad", C:"Constante universal", D:"Ley de conservación"}, correct: "A"},
-      {q: "¿Cuál es el postulado de superposición cuántica?", opts: {A:"Un sistema puede estar en múltiples estados hasta ser medido", B:"Las ondas viajan juntas", C:"Los electrones son partículas sólidas", D:"La energía es discreta"}, correct: "A"},
-      {q: "¿Qué importancia tiene la paradoja del gato de Schrödinger en la filosofía de la ciencia?", opts: {A:"Cuestiona la realidad objetiva y límites de la observación", B:"Demuestra la muerte simultánea", C:"Explica la relatividad", D:"Confirma energías infinitas"}, correct: "A"}
-    ]
-  };
+            <!-- Definición clara de PJI (tomada del PDF) -->
+            <div class="p-4 bg-indigo-50 rounded-xl border-l-4 border-indigo-500 shadow-md mb-6">
+                <h3 class="font-bold text-lg text-indigo-700 mb-2 flex items-center gap-2">
+                    <i data-lucide="shield-check" class="w-5 h-5"></i>
+                    PJI: Mecanismo de Participación Ciudadana Formal
+                </h3>
+                <p class="text-sm text-gray-700">
+                    PJI es una organización que funciona como un <strong class="font-bold text-gray-900">mecanismo democrático y de participación ciudadana formal</strong> donde los jóvenes pueden influir activamente en la vida política del país, obteniendo voz y eco en decisiones de carácter público a nivel nacional e internacional.
+                </p>
+            </div>
+            
+            <!-- Misión y Visión -->
+            <div class="grid md:grid-cols-2 gap-4 mb-6">
+                <div class="p-4 bg-green-50 rounded-xl border-l-4 border-[#00b894] shadow-md">
+                    <h3 class="font-bold text-lg text-[#00b894] mb-2 flex items-center gap-2">
+                        <i data-lucide="send" class="w-5 h-5"></i>
+                        Misión de PJI
+                    </h3>
+                    <p class="text-sm text-gray-700">
+                        Nuestra misión es empoderar a los jóvenes de todo el mundo para que se involucren en la política y trabajen juntos para crear un futuro más justo e igualitario para todos. Nos esforzamos por fomentar la participación cívica, promover los derechos humanos y avanzar en políticas y programas que beneficien a la juventud global.
+                    </p>
+                </div>
+                <div class="p-4 bg-blue-50 rounded-xl border-l-4 border-blue-500 shadow-md">
+                    <h3 class="font-bold text-lg text-blue-700 mb-2 flex items-center gap-2">
+                        <i data-lucide="star" class="w-5 h-5"></i>
+                        Visión de PJI
+                    </h3>
+                    <p class="text-sm text-gray-700">
+                        Nuestra visión es un mundo en el que los jóvenes son líderes influyentes, tomando decisiones y liderando cambios significativos en la política mundial. Soñamos con un futuro en el que la juventud tenga igualdad de oportunidades y acceso a la educación, los derechos humanos y la democracia.
+                    </p>
+                </div>
+            </div>
 
-  const playerSelection = document.getElementById('player-selection');
-  const gameContainer = document.getElementById('game-container');
-  const questionNumberElem = document.getElementById('question-number');
-  const questionTextElem = document.getElementById('question-text');
-  const answerButtons = Array.from(gameContainer.querySelectorAll('.answer-btn'));
-  const feedbackElem = document.getElementById('feedback');
-  const nextBtn = document.getElementById('next-btn');
-  const finalMessage = document.getElementById('final-message');
-  const restartBtn = finalMessage.querySelector('#restart-btn');
-  const lifelineBtn = document.getElementById('lifeline-btn');
-  const backToSelectionBtn = document.getElementById('back-to-selection-btn');
+            <!-- Bloque de Proyección Internacional -->
+            <div class="p-4 bg-indigo-100 rounded-xl border-l-4 border-indigo-600 shadow-lg mb-6">
+                <h3 class="font-bold text-lg text-indigo-800 mb-2 flex items-center gap-2">
+                    <i data-lucide="globe" class="w-5 h-5"></i>
+                    Proyección y Alcance Internacional de PJI
+                </h3>
+                <p class="text-sm text-gray-700 mb-3">
+                    Política Juvenil Internacional es una organización con <strong class="font-bold text-gray-900">presencia activa en 7 países</strong>, lo que subraya la relevancia global de sus actividades y la formación de sus líderes:
+                </p>
+                <p class="text-xs text-gray-700 mb-3 italic font-semibold">
+                    (Guatemala, Colombia, Bolivia, Italia, Reino Unido, Turquía y Senegal)
+                </p>
+                <div class="p-3 bg-red-50 rounded-lg border border-red-300">
+                    <p class="text-sm font-bold text-red-700 flex items-center gap-2">
+                        <i data-lucide="zap" class="w-4 h-4"></i>
+                        Evento Clave de Noviembre
+                    </p>
+                    <p class="text-xs text-gray-700 mt-1">
+                        Este mes de noviembre, PJI albergará un evento internacional crucial con la asistencia confirmada de miembros de <strong class="font-bold">Guatemala y Colombia</strong>, reforzando nuestro papel como Director de Enlace para estas alianzas y la importancia del evento.
+                    </p>
+                </div>
+            </div>
+            <!-- Fin de Bloque de Proyección Internacional -->
 
-  let currentPlayer = null;
-  let currentQuestionIndex = 0;
-  let currentQuestions = [];
-  let lifelineUsed = false;
 
-  function resetState() {
-    feedbackElem.textContent = '';
-    nextBtn.style.display = 'none';
-    lifelineBtn.disabled = lifelineUsed;
-    answerButtons.forEach(btn => {
-      btn.disabled = false;
-      btn.classList.remove('correct', 'incorrect', 'disabled');
-      btn.style.display = 'flex';
-    });
-  }
+            <!-- Funciones Específicas del Solicitante (ACTUALIZADO) -->
+            <div class="p-5 border border-red-300 rounded-xl bg-red-50 shadow-lg mb-6">
+                <h3 class="font-bold text-xl text-red-700 mb-3 flex items-center gap-2">
+                    <i data-lucide="briefcase" class="w-5 h-5"></i>
+                    Funciones del Director de Enlace Universitario (Genaro Zavala)
+                </h3>
+                <p class="text-md text-gray-700 mb-3">
+                    El rol actual se enfoca en la <strong class="font-bold">ejecución externa y la vinculación interinstitucional</strong>, tendiendo puentes entre la organización, el sector educativo (preparatorias y universidades) y otros actores clave en el ámbito cívico.
+                </p>
+                <ul class="list-disc list-inside text-sm text-gray-700 space-y-2">
+                    <li><strong class="font-semibold">Coordinación de Embajadores de Campus:</strong> Designar, formar y supervisar a líderes estudiantiles que representan a PJI y facilitan la interacción con la comunidad académica.</li>
+                    <li><strong class="font-semibold">Organización de Actividades en Campus:</strong> Planificar y ejecutar eventos, foros, talleres y mesas de debate directamente en las instalaciones educativas para promover la participación cívica.</li>
+                    <li><strong class="font-semibold">Relaciones Interinstitucionales Clave:</strong> Mantener alianzas formales con preparatorias, universidades y actores gubernamentales para asegurar el acceso a recursos y el éxito de los proyectos de impacto social.</li>
+                    <li><strong class="font-semibold">Diseño y Ejecución de Proyectos Estratégicos:</strong> Implementar programas de alto nivel como "Red Nacional de Diálogos Juveniles" y "Jóvenes Transformadores" que validan los conocimientos en un escenario real.</li>
+                </ul>
+            </div>
+            
+            <!-- Bloque: Proyectos Liderados como Director de Enlace Universitario -->
+            <div class="p-5 border border-indigo-300 rounded-xl bg-indigo-500/10 shadow-lg">
+                <h3 class="font-bold text-xl text-indigo-700 mb-3 flex items-center gap-2">
+                    <i data-lucide="rocket" class="w-5 h-5"></i>
+                    Proyectos de Alto Nivel Liderados por el Solicitante
+                </h3>
+                <p class="text-md text-gray-700 mb-4">
+                    La Dirección de Enlace Universitario ha gestionado iniciativas estratégicas que demuestran <strong class="font-bold">liderazgo, negociación y capacidad de ejecución interinstitucional</strong>:
+                </p>
 
-  function startGame(playerNum) {
-    currentPlayer = playerNum;
-    currentQuestions = questions[playerNum];
-    currentQuestionIndex = 0;
-    lifelineUsed = false;
-    playerSelection.style.display = 'none';
-    finalMessage.style.display = 'none';
-    gameContainer.style.display = 'block';
-    lifelineBtn.disabled = false;
-    showQuestion();
-  }
+                <!-- Proyecto 1: Jóvenes Transformadores & Querétaro Activo -->
+                <div class="p-3 bg-yellow-50 rounded-lg border-l-4 border-yellow-400 mb-3">
+                    <p class="text-sm font-bold text-gray-800">Jóvenes Transformadores & Querétaro Activo (Piloto)</p>
+                    <p class="text-xs text-gray-600">
+                        Programas piloto de inmersión para el diseño e implementación de políticas públicas juveniles en el estado.
+                    </p>
+                    <p class="text-xs font-semibold text-blue-700 mt-1">
+                        Colaboración intersecretarial con: <strong class="font-bold">Secretaría de Cultura, Secretaría de Juventud y Secretaría de Educación del Estado.</strong>
+                    </p>
+                </div>
 
-  function showQuestion() {
-    resetState();
-    const q = currentQuestions[currentQuestionIndex];
-    questionNumberElem.textContent = `Pregunta ${currentQuestionIndex + 1} de ${currentQuestions.length}`;
-    questionTextElem.textContent = q.q;
-    answerButtons.forEach(btn => {
-      const option = btn.getAttribute('data-option');
-      btn.querySelector('.answer-text').textContent = q.opts[option];
-    });
-  }
+                <!-- Proyecto 2: Red Nacional de Diálogos Juveniles -->
+                <div class="p-3 bg-green-50 rounded-lg border-l-4 border-green-400">
+                    <p class="text-sm font-bold text-gray-800">Red Nacional de Diálogos Juveniles</p>
+                    <p class="text-xs text-gray-600">
+                        Iniciativa nacional para conectar voces estudiantiles y generar propuestas de política pública desde las universidades.
+                    </p>
+                    <p class="text-xs font-semibold text-blue-700 mt-1">
+                        Alianzas estratégicas con: <strong class="font-bold">Secretaría de Educación, SELIDER, UNAM, New Element University, Life of Pachamama, Unión de Minusválidos de Querétaro I.A.P., INESLE.</strong>
+                    </p>
+                </div>
+            </div>
 
-  function selectAnswer(e) {
-    const selectedBtn = e.currentTarget;
-    if (selectedBtn.disabled) return;
-    const selectedOption = selectedBtn.getAttribute('data-option');
-    const correctOption = currentQuestions[currentQuestionIndex].correct;
+        </section>
 
-    answerButtons.forEach(btn => {
-      btn.disabled = true;
-      btn.classList.add('disabled');
-      if (btn.getAttribute('data-option') === correctOption) {
-        btn.classList.add('correct');
-      }
-    });
+        <!-- Importancia de la Oportunidad (Estructura de Columnas) - AHORA SECCIÓN 3 -->
+        <section class="mb-10">
+            <h2 class="section-title">
+                <i data-lucide="heart-handshake" class="w-7 h-7"></i>
+                3. Justificación Humanista y Beneficio Institucional
+            </h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Columna Carl Rogers (Teal/Green: Crecimiento) -->
+                <div class="p-5 border border-[#00b894] rounded-xl bg-[#e6fff9] shadow-lg">
+                    <h3 class="font-bold text-xl text-[#00b894] mb-3 flex items-center gap-2">
+                        <i data-lucide="leaf" class="w-5 h-5"></i>
+                        Alineación con Filosofía Carl Rogers
+                    </h3>
+                    <ul class="list-disc list-inside text-sm text-gray-700 space-y-2">
+                        <li><strong class="font-semibold">Fomento de la Autonomía:</strong> El alumno ejerce la toma de decisiones responsable sobre su crecimiento.</li>
+                        <li><strong class="font-semibold">Valores en Acción:</strong> Es la forma más pura de practicar la ética y la responsabilidad social.</li>
+                        <li><strong class="font-semibold">Crecimiento Integral:</strong> La experiencia transforma y alinea con el aprendizaje vivencial promovido por la institución.</li>
+                    </ul>
+                </div>
+                <!-- Columna PJI (Blue: Seriedad) -->
+                <div class="p-5 border border-blue-200 rounded-xl bg-blue-50 shadow-lg">
+                    <h3 class="font-bold text-xl text-blue-800 mb-3 flex items-center gap-2">
+                        <i data-lucide="award" class="w-5 h-5"></i>
+                        Beneficio para la Prepa
+                    </h3>
+                    <ul class="list-disc list-inside text-sm text-gray-700 space-y-2">
+                        <li><strong class="font-semibold">Red de Contactos de Valor:</strong> El alumno obtiene acceso a una red profesional de líderes juveniles y académicos a nivel nacional e internacional, enriqueciendo el *networking* de la Prepa.</li>
+                        <li><strong class="font-semibold">Actualización Curricular:</strong> Obtención de retroalimentación sobre las necesidades y temas de debate actuales a nivel juvenil, aplicable en las asignaturas de Humanidades y Formación Cívica.</li>
+                        <li><strong class="font-semibold">Caso de Éxito (Branding):</strong> El liderazgo del alumno en PJI y su participación en el Parlamento enriquece la imagen de la Prepa como un centro de formación de líderes cívicos de alto impacto.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
 
-    if (selectedOption === correctOption) {
-      feedbackElem.textContent = "¡Correcto!";
-      feedbackElem.style.color = "#2ed573";
-    } else {
-      feedbackElem.textContent = `Incorrecto. La respuesta correcta es ${correctOption}: "${currentQuestions[currentQuestionIndex].opts[correctOption]}"`;
-      feedbackElem.style.color = "#ff4757";
-      selectedBtn.classList.add('incorrect');
-    }
+        <!-- Propuesta de Compensación Interactiva (Lúdico) - AHORA SECCIÓN 4 -->
+        <section class="mb-8">
+            <h2 class="section-title">
+                <i data-lucide="palette" class="w-7 h-7"></i>
+                4. Propuesta de Compensación Académica (Proyectos Realistas)
+            </h2>
 
-    nextBtn.style.display = 'inline-block';
-    lifelineBtn.disabled = true;
-  }
+            <p class="text-gray-700 mb-4">
+                Considerando la importancia de la Feria, se presenta un Plan de Trabajo Especial para asegurar la calificación en Danza, Artes Plásticas y Teatro, alineado con el tema <strong class="font-extrabold text-gray-900">"Valores"</strong>:
+            </p>
 
-  function nextQuestion() {
-    currentQuestionIndex++;
-    if (currentQuestionIndex < currentQuestions.length) {
-      lifelineBtn.disabled = lifelineUsed;
-      showQuestion();
-    } else {
-      gameOver();
-    }
-  }
+            <button onclick="togglePropuesta()" id="toggleButton" class="toggle-btn w-full p-4 text-white font-extrabold rounded-xl hover:shadow-xl transition-all shadow-xl text-lg">
+                <i data-lucide="eye" class="w-5 h-5 inline mr-2"></i>
+                VER EL PROYECTO DE COMPENSACIÓN DETALLADO Y REALISTA ▼
+            </button>
 
-  function gameOver() {
-    gameContainer.style.display = 'none';
-    finalMessage.style.display = 'block';
-  }
+            <div id="propuestaDetalle" class="proposal-card mt-6 rounded-2xl p-6 shadow-2xl hidden bg-white">
+                <p class="font-extrabold text-xl mb-4 text-gray-800">Eje central: La vivencia de Valores cívicos y éticos en la práctica política.</p>
 
-  function useLifeline() {
-    if (lifelineUsed) return;
-    lifelineUsed = true;
-    lifelineBtn.disabled = true;
+                <div class="space-y-5">
+                    
+                    <!-- Compensación Artes Plásticas (Contingencia Actualizada) -->
+                    <div class="p-4 bg-red-50 rounded-xl border-l-8 border-red-500 shadow-md">
+                        <h4 class="font-bold text-xl text-red-700 mb-2 flex items-center gap-2">
+                            <i data-lucide="file-text" class="w-6 h-6"></i>
+                            Compensación (Artes Plásticas) - <span class="text-sm font-semibold italic text-red-800">Plan de Contingencia</span>
+                        </h4>
+                        <p class="text-md text-gray-700">Propuesta de Compensación Alternativa: Elaboración de una <strong class="font-bold">Investigación Documental y Visual</strong>
+                        <p class="text-md text-gray-700 mt-2">Este trabajo analizará cómo el arte (muralismo, ilustración cívica, pósters) es una herramienta clave para fomentar la participación, la crítica social y la conciencia de valores en la juventud.</p>
+                        <p class="text-sm font-bold text-red-800 mt-2 p-1 bg-red-100 rounded">
+                            Esta propuesta se aplicará <strong class="underline">únicamente</strong> en caso de no poder entregar o presentar a tiempo el proyecto original (Pintura, Escultura, etc.) debido a la coincidencia de fechas.
+                        </p>
+                        <p class="text-xs italic text-gray-600 mt-1">El documento de investigación se entregará junto con la justificación conceptual.</p>
+                    </div>
 
-    const q = currentQuestions[currentQuestionIndex];
-    const correctOption = q.correct;
+                    <!-- Compensación Teatro (ACTUALIZADO: Dos Opciones) -->
+                    <div class="p-4 bg-purple-50 rounded-xl border-l-8 border-purple-500 shadow-md">
+                        <h4 class="font-bold text-xl text-purple-700 mb-2 flex items-center gap-2">
+                            <i data-lucide="clipboard-list" class="w-6 h-6"></i>
+                            Compensación (Teatro) - <span class="text-sm font-semibold italic text-purple-800">Doble Opción de Presentación</span>
+                        </h4>
+                        <p class="text-md text-gray-700 mb-3">El profesor podrá seleccionar una de las siguientes opciones. Ambas requieren la presentación de un <strong class="font-bold">análisis oral de 10 minutos</strong> ante el profesor o grupo, abordando un dilema ético desde una Perspectiva Humanista.</p>
+                        
+                        <ul class="list-disc list-inside text-sm text-gray-700 space-y-2 ml-4">
+                            <li>
+                                <strong class="font-bold text-purple-800">Opción 1: Dilema Cívico (Parlamento Juvenil)</strong>. Análisis de un <strong class="font-bold">Dilema Ético</strong> crucial debatido durante las sesiones del Parlamento Juvenil, enfocándose en la resolución de conflictos y el impacto social.
+                            </li>
+                            <li>
+                                <strong class="font-bold text-purple-800">Opción 2: Dilema Artístico (Mundo del Teatro)</strong>. Análisis de un <strong class="font-bold">Dilema Ético</strong> significativo que surja en el mundo del teatro (ej. censura, apropiación cultural, integridad actoral), enfocándose en la responsabilidad artística.
+                            </li>
+                        </ul>
 
-    const incorrectOptions = answerButtons.filter(btn => btn.getAttribute('data-option') !== correctOption && btn.style.display !== 'none');
+                        <p class="text-xs italic text-gray-600 mt-3">Se evaluará la estructura del argumento, la capacidad de análisis humanista y la calidad de la exposición.</p>
+                    </div>
 
-    let toRemove = [];
-    if (incorrectOptions.length <= 2) {
-      toRemove = incorrectOptions;
-    } else {
-      while (toRemove.length < 2) {
-        const idx = Math.floor(Math.random() * incorrectOptions.length);
-        const chosen = incorrectOptions[idx];
-        if (!toRemove.includes(chosen)) {
-          toRemove.push(chosen);
-        }
-      }
-    }
+                    <!-- Compensación Danza (ACTUALIZADO) -->
+                    <div class="p-4 bg-yellow-50 rounded-xl border-l-8 border-yellow-500 shadow-md">
+                        <h4 class="font-bold text-xl text-yellow-700 mb-2 flex items-center gap-2">
+                            <i data-lucide="bookmark" class="w-6 h-6"></i>
+                            Compensación (Danza)
+                        </h4>
+                        <p class="text-md text-gray-700">Diseño y entrega de una <strong class="font-bold">Investigación Documental </strong>
+                        <p class="text-md text-gray-700 mt-2">Este trabajo analizará cómo el movimiento (elementos de la danza) ha sido históricamente utilizado como un <strong class="font-bold">vehículo de expresión política y social</strong>, ejemplificando su uso en manifestaciones pacíficas, obras de teatro político o performance artísticas que buscan promover valores y cambios sociales (similar a lo que se realiza en el Parlamento, pero a través del lenguaje corporal).</p>
+                        <p class="text-xs italic text-gray-600 mt-1">Se evaluará la capacidad de análisis, la documentación de casos históricos y la relación interdisciplinaria entre el arte corporal y la influencia social.</p>
+                    </div>
 
-    toRemove.forEach(btn => {
-      btn.style.display = 'none';
-      btn.disabled = true;
-    });
-  }
+                    <!-- Reporte General -->
+                    <div class="p-4 bg-gray-100 rounded-xl border-l-8 border-gray-400 shadow-inner">
+                        <h4 class="font-bold text-xl text-gray-700 mb-2 flex items-center gap-2">
+                            <i data-lucide="file-text" class="w-6 h-6"></i>
+                            Evaluación Global (Ensayo)
+                        </h4>
+                        <p class="text-md text-gray-700">Entrega de un <strong class="font-bold">Reporte-Ensayo (mínimo 3 páginas)</strong> sobre cómo el humanismo de la Carl Rogers preparó al alumno para este rol en la política, validado con la constancia de PJI.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Anexo y Cierre Final (Impersonal) -->
+        <section class="pt-6 border-t-2 border-gray-200">
+            <h2 class="section-title">
+                <i data-lucide="link" class="w-7 h-7"></i>
+                5. ANEXOS: Evidencia de la Organización
+            </h2>
+            <p class="text-center text-gray-700 mb-4">
+                Se adjuntan dos recursos para la verificación de la organización y la propuesta: la página web oficial y el documento de Misión y Visión que avala la seriedad de la institución.
+            </p>
+            <!-- BOTONES DE ENLACE -->
+            <div class="flex flex-col md:flex-row justify-center gap-4 mb-10">
+                
+                <!-- Botón 1: Enlace a la Web (Corregido) -->
+                <a href="https://pjimx.org/" target="_blank" class="anexo-btn flex-1 flex items-center justify-center p-4 text-white font-extrabold rounded-xl hover:shadow-xl transition-all shadow-xl text-lg">
+                    <i data-lucide="external-link" class="w-5 h-5 inline mr-2"></i>
+                    WEB OFICIAL DE PJI
+                </a>
 
-  function backToSelection() {
-    gameContainer.style.display = 'none';
-    finalMessage.style.display = 'none';
-    playerSelection.style.display = 'block';
-    // reset states
-    currentPlayer = null;
-    currentQuestionIndex = 0;
-    currentQuestions = [];
-    lifelineUsed = false;
-  }
+                <!-- Botón 2: Enlace al PDF (Nuevo Anexo) -->
+                <!-- Utilizando el contentFetchId para generar el enlace al documento PDF subido -->
+                <a href="uploaded:Misión y Visión  (1).pdf" target="_blank" class="pdf-btn flex-1 flex items-center justify-center p-4 text-white font-extrabold rounded-xl hover:shadow-xl transition-all shadow-xl text-lg">
+                    <i data-lucide="file-text" class="w-5 h-5 inline mr-2"></i>
+                    DOCUMENTO MISIÓN Y VISIÓN (PDF)
+                </a>
 
-  playerSelection.querySelectorAll('.player-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const playerNum = parseInt(btn.getAttribute('data-player'), 10);
-      startGame(playerNum);
-    });
-  });
+            </div>
+            
+            <!-- CIERRE IMPERSONAL -->
+            <div class="text-center pt-4">
+                <p class="text-gray-700 mb-6 font-medium">
+                    La presente solicitud refleja los valores cultivados en la institución. El Plan de Compensación propuesto no solo cumple, sino que enriquece el tema de <strong class="font-extrabold text-gray-900">Valores</strong> con una experiencia cívica tangible.
+                </p>
+                <p class="font-extrabold text-2xl text-gray-900 mb-2">
+                    Se espera la consideración de esta experiencia como un elemento de autorrealización alineado con los principios formativos de la Prepa Carl Rogers.
+                </p>
+                <i data-lucide="heart" class="w-8 h-8 text-[#FF9800] mx-auto mt-4"></i>
+            </div>
+        </section>
 
-  answerButtons.forEach(btn => btn.addEventListener('click', selectAnswer));
-  nextBtn.addEventListener('click', nextQuestion);
-  restartBtn.addEventListener('click', () => {
-    finalMessage.style.display = 'none';
-    playerSelection.style.display = 'block';
-  });
-  lifelineBtn.addEventListener('click', useLifeline);
-  backToSelectionBtn.addEventListener('click', backToSelection);
-})();
-</script>
+        <script>
+            // Inicializa los iconos de Lucide
+            lucide.createIcons();
+
+            function togglePropuesta() {
+                const detalle = document.getElementById('propuestaDetalle');
+                const button = document.getElementById('toggleButton');
+                const isHidden = detalle.classList.contains('hidden');
+
+                if (isHidden) {
+                    detalle.classList.remove('hidden');
+                    // Usar un color más oscuro cuando está abierto para mayor contraste
+                    button.classList.add('bg-blue-800', 'box-shadow: 0 4px #005A9C');
+                    button.classList.remove('bg-[#00b894]', 'box-shadow: 0 4px #00967d');
+                    button.innerHTML = '<i data-lucide="eye-off" class="w-5 h-5 inline mr-2"></i> OCULTAR EL PROYECTO DE COMPENSACIÓN DETALLADO ▲';
+                } else {
+                    detalle.classList.add('hidden');
+                    // Regresar al color primario cuando está cerrado
+                    button.classList.add('bg-[#00b894]', 'box-shadow: 0 4px #00967d');
+                    button.classList.remove('bg-blue-800', 'box-shadow: 0 4px #005A9C');
+                    button.innerHTML = '<i data-lucide="eye" class="w-5 h-5 inline mr-2"></i> VER EL PROYECTO DE COMPENSACIÓN DETALLADO Y REALISTA ▼';
+                }
+                lucide.createIcons(); // Vuelve a inicializar iconos después del cambio de contenido
+            }
+        </script>
+    </div>
 </body>
 </html>
-
